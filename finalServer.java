@@ -27,16 +27,17 @@ public class finalServer {
 		server = new ServerSocket(8090);
 
 		while (true) {
+			Socket client;
+			client = server.accept();
 
-			client1 = server.accept();
-
-			User a = new User("newUser", client1, serverInput, serverOutput);
-			a.output = new DataOutputStream(a.getOutput());
-			a.input = new DataInputStream(a.getInput());
+			User a = new User("newUser", client, serverInput, serverOutput);
+			a.output = new DataOutputStream(a.output);
+			a.input = new DataInputStream(a.input);
 			class ToAll extends Thread {
 				@Override
 				public void run() {
 					String name = "";
+					User _newUser = null;
 					while (true) {
 						String contact = "";
 						User b = null;
@@ -48,7 +49,8 @@ public class finalServer {
 							if (line.equals("login")) {
 								a.output.writeBytes("what is your name?" + "\n");
 								name = a.input.readLine();
-								Onlineusers.add(new User(name, client1, serverInput, serverOutput));
+								_newUser = new User(name, client, serverInput, serverOutput);
+								Onlineusers.add(_newUser);
 								a.output.writeBytes("please choose one of the below options" + "\n");
 								a.output.writeBytes("list/close" + "\n");
 							}
@@ -58,7 +60,7 @@ public class finalServer {
 									a.output.writeBytes(Onlineusers.get(i).name + "\n");
 								}
 								contact = a.input.readLine();
-								b = new User(contact, client2, clientInput, clientOutput);
+								b = new User(contact, client, clientInput, clientOutput);
 								clientInput = new DataInputStream(b.getInput());
 								clientOutput = new DataOutputStream(b.getOutput());
 
@@ -66,53 +68,43 @@ public class finalServer {
 									if (contact.equals(Onlineusers.get(i).name)) {
 										a.output.writeBytes(
 												"you are connected to " + Onlineusers.get(i).getName() + "\n");
+									//	Onlineusers.get(i).output
+										//		.writeBytes(_newUser.name + " has been connected to you" + "\n");
 										String message1 = "";
 										String message2 = "";
-										final int j = i;
-										int m = 0;
-										while(true){
-											if(!a.input.readLine().equals(null)){
+										while (true) {
+											if (!a.input.readLine().equals(null)) {
 												message1 = a.input.readLine();
 												System.out.println(message1);
 												Onlineusers.get(i).output.writeBytes(message1 + "\n");
 												continue;
 											}
-											if(!Onlineusers.get(i).input.readLine().equals(null)){
+											if (message2.equals("")) {
+												_newUser.output.writeBytes("baaaaaaaleeee" + "\n");
 												message2 = Onlineusers.get(i).input.readLine();
 												System.out.println(message2);
 												a.output.writeBytes(message2 + "\n");
+												a.output.writeBytes("hey man");
+
 												continue;
 											}
+
+											continue;
+
 										}
-										/*
-										 * while (true) { message1 =
-										 * a.input.readLine();
-										 * System.out.println(message1);
-										 * Onlineusers.get(i).output.writeBytes(
-										 * message1 + "\n");
-										 * if(message1.equals("exit")){ break;
-										 * }} while(true){
-										 * 
-										 * message2 =
-										 * Onlineusers.get(i).input.readLine();
-										 * System.out.println(message2);
-										 * a.output.writeBytes(message2 + "\n");
-										 * if(message2.equals("exit")){ break; }
-										 * 
-										 * }
-										 */
+
 									}
 								}
 
 							}
 
-							if (a.input.readLine().equals("close")) {
-								client1.close();
-								client2.close();
-							} else {
-
-								continue;
-							}
+							// if (a.input.readLine().equals("close")) {
+							// client1.close();
+							// client2.close();
+							// } else {
+							//
+							// continue;
+							// }
 						} catch (Exception e) {
 							e.getMessage();
 						}
